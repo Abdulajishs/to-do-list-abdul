@@ -6,6 +6,13 @@ const db = new sqlite3.Database('./todolist.db',(err)=>{
     }else{
         console.log('Successfully connected to sqlite3 database');
     }
+    db.run('PRAGMA foreign_keys = ON;', (err) => {
+        if (err) {
+            console.error('Error enabling foreign keys:', err.message);
+        } else {
+            console.log('Foreign keys enabled.');
+        }
+    });
 })
 
 db.serialize(()=>{

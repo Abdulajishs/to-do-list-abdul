@@ -15,11 +15,11 @@ app.use(cors(corsOption));
 
 // import project router
 let projectRouter = require(path.join(__dirname,'app','routes','project.routes.js'));
-app.use('/api/projects',projectRouter)
+app.use('/todolist/projects',projectRouter)
 
 // import task router
 let taskRouter = require(path.join(__dirname,'app','routes','task.routes.js'))
-app.use('/api/tasks',taskRouter)
+app.use('/todolist/tasks',taskRouter)
 
 app.get('/',(req,res)=>{
     res.json({message: 'Welcome to todolist'})

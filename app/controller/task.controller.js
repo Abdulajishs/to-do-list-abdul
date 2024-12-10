@@ -1,4 +1,3 @@
-const { query } = require('express');
 const  Tasks = require('../model/task.model');
 
 
@@ -36,6 +35,10 @@ let getALLTask = (req,res)=>{
 let getTaskById = (req,res) =>{
     let id = parseInt(req.params.id);
     console.log(id)
+    if(isNaN(id)){
+        res.status(400).send({ message: "Invalid ID provided" });
+        return
+    }
     Tasks.getTask(id,(err,data)=>{
         if (err) {
             console.log(err.message)
