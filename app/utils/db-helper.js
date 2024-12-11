@@ -1,4 +1,19 @@
-const db = require('../configDb/db');
+const sqlite3 = require('sqlite3');
+
+const db = new sqlite3.Database('./todo.db', (err) => {
+    if (err) {
+        console.error(`Error connecting to the database : ${err.message}`)
+    } else {
+        console.log('Successfully connected to sqlite3 database');
+    }
+    db.run('PRAGMA foreign_keys = ON;', (err) => {
+        if (err) {
+            console.error('Error enabling foreign keys:', err.message);
+        } else {
+            console.log('Foreign keys enabled.');
+        }
+    });
+})
 
 function runQuery(query,values = []) {
     return new Promise((resolve, reject) => {
@@ -37,6 +52,7 @@ function getSingleQuery(query, values = []) {
 }
 
 module.exports = {
+    db,
     runQuery,
     getAllQuery,
     getSingleQuery

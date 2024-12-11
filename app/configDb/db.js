@@ -1,56 +1,54 @@
-const sqlite3 = require('sqlite3')
+let {db, runQuery } = require('../utils/db-helper')
 
-const db = new sqlite3.Database('./todolist.db',(err)=>{
-    if(err){
-        console.error(`Error connecting to the database : ${err.message}`)
-    }else{
-        console.log('Successfully connected to sqlite3 database');
-    }
-    db.run('PRAGMA foreign_keys = ON;', (err) => {
-        if (err) {
-            console.error('Error enabling foreign keys:', err.message);
-        } else {
-            console.log('Foreign keys enabled.');
-        }
-    });
-})
 
-db.serialize(()=>{
-    let projectTableQuery = `
-    CREATE TABLE IF NOT EXISTS projects (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    color TEXT NOT NULL,
-    is_favorite BOOLEAN DEFAULT FALSE
-    )
-    `;
-    db.run(projectTableQuery,(err)=>{
-        if(err){
-            console.error("Error creating project table:", err.message);
-        } else {
-            console.log("project table created successfully.");
-        }
-    })
 
-    let taskTableQuery = `
-    CREATE TABLE IF NOT EXISTS tasks (
+async function initializeDatabase() {
+    try {
+        let userTableQuery = `
+        CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        content TEXT NOT NULL,
-        description TEXT NOT NULL,
-        due_date DATETIME NOT NULL,
-        is_completed BOOLEAN DEFAULT FALSE,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        project_id INTEGER NOT NULL,
-        FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE
+        name TEXT UNIQUE NOT NULL,
+        email TEXT UNIQUE NOT NULL
+        )
+        `
+        await runQuery(userTableQuery);
+        console.log("Users table created successfully.");
+
+        let projectTableQuery = `
+        CREATE TABLE IF NOT EXISTS projects (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        color TEXT NOT NULL,
+        is_favorite BOOLEAN DEFAULT FALSE,
+        user_id INTEGER NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
         )
         `;
-        db.run(taskTableQuery,(err)=>{
-            if(err){
-                console.error("Error creating tasks table:", err.message);
-            } else {
-                console.log("tasks table created successfully.");
-            }
-        })
-})
+
+        await runQuery(projectTableQuery);
+        console.log("Projects table created successfully.");
+
+        let taskTableQuery = `
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                content TEXT NOT NULL,
+                description TEXT NOT NULL,
+                due_date DATETIME NOT NULL,
+                is_completed BOOLEAN DEFAULT FALSE,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                project_id INTEGER NOT NULL,
+                FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE
+                )
+                `;
+
+        await runQuery(taskTableQuery);
+        console.log("Tasks table created successfully.");
+
+    } catch (error) {
+        console.error("Error creating tables:", error.message);
+    }
+}
+
+initializeDatabase()
 
 module.exports = db
