@@ -1,4 +1,5 @@
 const db = require('../configDb/db');
+let { runQuery, getAllQuery, getSingleQuery } = require('../utils/db-helper')
 
 class Project {
     constructor(project) {
@@ -7,125 +8,105 @@ class Project {
             this.is_favorite = project.is_favorite
     }
 
-    static create(newProject, result) {
-        let query = `
-        INSERT INTO projects (name,color,is_favorite)
-        VALUES (?,?,?)`
-        let values = [newProject.name, newProject.color, newProject.is_favorite];
+    static async create(newProject) {
+        try {
+            let query = `
+            INSERT INTO projects (name,color,is_favorite)
+            VALUES (?,?,?)`
+            let values = [newProject.name, newProject.color, newProject.is_favorite];
+            let result = await runQuery(query, values)
 
-        db.run(query, values, function (err) {
-            if (err) {
-                console.log(`Error inserting data: ${err.message}`);
-                result(err, null);
-                return
-            }
-            console.log("Created project:", { id: this.lastID, ...newProject });
-            result(null, { id: this.lastID, ...newProject })
-        })
-    }
-
-    static getProject(id,result){
-        let query =`
-        SELECT * FROM projects
-        WHERE id = ?
-        `
-        let values = [id];
-        console.log(id)
-        db.get(query, values, (err, row) => {
-            if (err) {
-                console.error(`Error  reteriving project: ${err.message}`)
-                result(err, null)
-                return
-            }
-            console.log(`projects: ${JSON.stringify(row)}`)
-            result(null, row)
-        })
-    }
-
-    static getProjects(name, result) {
-        let query = `SELECT * FROM projects`
-        let values = [];
-        if (name) {
-            query += ` WHERE name LIKE ?`
-            values.push(`%${name}%`)
+            return { id: result.id, ...newProject }
+        } catch (error) {
+            throw new Error(error.message);
         }
-        db.all(query, values, (err, rows) => {
-            if (err) {
-                console.error(`Error  reteriving project: ${err.message}`)
-                result(err, null)
-                return
-            }
-            console.log(`projects: ${JSON.stringify(rows)}`)
-            result(null, rows)
-        })
     }
 
-    static  updateProject(newProject,id,result){
-        if(!id){
-            console.log(`Error: cannot update without id`);
-            result({message: "Project id is required"},null)
-            return
+    static async getProject(id) {
+        try {
+            let query = `
+            SELECT * FROM projects
+            WHERE id = ?
+            `
+            let values = [id];
+
+            let row = await getSingleQuery(query, values);
+
+            return row
+        } catch (error) {
+            throw new Error(error.message);
         }
-
-        let query = `
-        UPDATE projects
-        SET name = ?, color = ?, is_favorite = ?
-        WHERE id = ?
-        `
-        let values = [newProject.name,newProject.color,newProject.is_favorite,id]
-
-        db.run(query,values,function (err){
-            if (err) {
-                console.error(`Error updating project: ${err.message}`)
-                result(err, null)
-                return
-            }
-            if(this.changes === 0){
-                console.log(`Project with id ${id} is not found.`)
-                result({message: 'Project not found'},null)
-                return
-            }
-            console.log(`projects:`,{id: this.lastID, ...newProject})
-            result(null, {id,...newProject})
-        })
     }
 
-    static deleteProject(id,result){
-        let query = `
-        DELETE FROM projects
-        WHERE id = ?
-        `
-        let values = [id]
-        db.run(query,values,function(err){
-            if(err){
-                console.log(`Error deleting project with id of ${id}`);
-                result(err,null);
-                return
+    static async getProjects(name) {
+        try {
+            let query = `SELECT * FROM projects`
+            let values = [];
+            if (name) {
+                query += ` WHERE name LIKE ?`
+                values.push(`%${name}%`)
             }
-            if(this.changes === 0){
-                console.log(`Project with id ${id} is not found.`)
-                result({message: 'Project not found'},null)
-                return
-            }
-            console.log(`Deleted project with id: ${id}`);
-            result(null,{id})
-        })
+
+            let rows = await getAllQuery(query, values);
+            return rows
+        } catch (error) {
+            throw new Error(error.message);
+        }
     }
 
-    static deleteALL (result){
-        let query = `
-        DELETE FROM projects
-        `
-        db.run(query,function(err){
-            if(err){
-                console.log(`Error deleting all projects ${err.message}`);
-                result(err,null);
-                return
+    static async updateProject(newProject, id) {
+        try {
+            if (!id) {
+                throw new Error('Project ID is required');
             }
-           
-            console.log(`Deleted ${this.changes} projects`);
-            result(null,{deleted: this.changes})
-        })
+
+            let query = `
+            UPDATE projects
+            SET name = ?, color = ?, is_favorite = ?
+            WHERE id = ?
+            `
+            let values = [newProject.name, newProject.color, newProject.is_favorite, id]
+
+            let result = await runQuery(query, values);
+
+            if (result.changes === 0) {
+                throw new Error('Project not found');
+            }
+            return { id, ...newProject }
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    static async deleteProject(id) {
+        try {
+            let query = `
+            DELETE FROM projects
+            WHERE id = ?
+            `
+            let values = [id]
+
+            let result = await runQuery(query, values);
+
+            if (result.changes === 0) {
+                throw new Error(`Error deleting project with id of ${id}`);
+            }
+
+            return { id }
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    static async deleteALL() {
+        try {
+            let query = `DELETE FROM projects`
+            let result = await runQuery(query)
+
+            return { deleted: result.changes }
+        } catch (error) {
+            throw new Error(error.message);
+        }
     }
 }
 
