@@ -42,7 +42,7 @@ function getAllQuery(query,values = []) {
 function getSingleQuery(query, values = []) {
     return new Promise((resolve, reject) => {
         db.get(query, values, function (err,row){
-            if(er){
+            if(err){
                 reject(err)
             }else{
                 resolve(row)
