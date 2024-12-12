@@ -25,6 +25,10 @@ app.use('/todolist/projects',projectRouter)
 let taskRouter = require(path.join(__dirname,'app','routes','task.routes.js'))
 app.use('/todolist/tasks',taskRouter)
 
+// import comment router
+let commentRouter = require(path.join(__dirname,'app','routes','comment.routes.js'))
+app.use('/todolist/comments',commentRouter)
+
 app.get('/',(req,res)=>{
     res.json({message: 'Welcome to todolist'})
 })

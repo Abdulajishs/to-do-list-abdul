@@ -5,15 +5,16 @@ class Project {
     constructor(project) {
         this.name = project.name,
             this.color = project.color,
-            this.is_favorite = project.is_favorite
+            this.is_favorite = project.is_favorite,
+            this.user_id = project.user_id
     }
 
     static async create(newProject) {
         try {
             let query = `
-            INSERT INTO projects (name,color,is_favorite)
-            VALUES (?,?,?)`
-            let values = [newProject.name, newProject.color, newProject.is_favorite];
+            INSERT INTO projects (name,color,is_favorite,user_id)
+            VALUES (?,?,?,?)`
+            let values = [newProject.name, newProject.color, newProject.is_favorite,newProject.user_id];
             let result = await runQuery(query, values)
 
             return { id: result.id, ...newProject }

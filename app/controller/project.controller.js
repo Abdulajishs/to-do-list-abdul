@@ -2,7 +2,7 @@ const Project = require('../model/project.model');
 
 let createProject = async (req, res) => {
     try {
-        if (!req.body.name || !req.body.color) {
+        if (!req.body.name || !req.body.color || !req.body.user_id) {
             res.status(400).send({
                 message: "Project name and color are required."
             })
@@ -11,7 +11,8 @@ let createProject = async (req, res) => {
         let project = new Project({
             name: req.body.name,
             color: req.body.color,
-            is_favorite: req.body.is_favorite
+            is_favorite: req.body.is_favorite,
+            user_id: req.body.user_id
         })
 
         let data = await Project.create(project);

@@ -1,14 +1,15 @@
 const router = require('express').Router()
 let { createUser, getAllUser, getUserById, updateUserById, deleteUserById, deleteAllUsers} = require("../controller/user.controller");
 
+let {validation,userValidationSchema} = require("../middleware/validation.js")
 
-router.post('/', createUser);
+router.post('/', validation(userValidationSchema) ,createUser);
 
 router.get('/', getAllUser);
 
 router.get('/:id', getUserById);
 
-router.put('/:id', updateUserById);
+router.put('/:id',validation(userValidationSchema) ,updateUserById);
 
 router.delete('/:id', deleteUserById);
 

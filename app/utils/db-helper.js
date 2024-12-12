@@ -1,6 +1,6 @@
 const sqlite3 = require('sqlite3');
 
-const db = new sqlite3.Database('./todo.db', (err) => {
+const db = new sqlite3.Database('./test.db', (err) => {
     if (err) {
         console.error(`Error connecting to the database : ${err.message}`)
     } else {
