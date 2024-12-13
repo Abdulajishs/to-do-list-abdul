@@ -1,4 +1,3 @@
-const sqlite3 = require('sqlite3').verbose();
 const faker = require('faker');
 
 let { db } = require('../utils/db-helper')
@@ -16,13 +15,22 @@ const generateProjects = async () => {
 
     const insertBatch = (batch) => {
       return new Promise((resolve, reject) => {
-        db.run(
-          `INSERT INTO projects (name, color, is_favorite, user_id) VALUES ${batch.join(",")}`,
-          (err) => {
-            if (err) reject(err);
-            else resolve();
-          }
-        );
+
+        const placeholders = batch.map(() => "(?, ?, ?, ?)").join(",");
+        const flatValues = batch.flat(); // Flatten the batch into a single array
+        const query = `INSERT INTO projects (name, color, is_favorite, user_id) VALUES ${placeholders}`;
+    
+        db.run(query, flatValues, (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+        // db.run(
+        //   `INSERT INTO projects (name, color, is_favorite, user_id) VALUES ${batch.join(",")}`,
+        //   (err) => {
+        //     if (err) reject(err);
+        //     else resolve();
+        //   }
+        // );
       });
     };
 

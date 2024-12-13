@@ -45,8 +45,8 @@ let getProjectById = async (req, res) => {
 
 let getAllProjects = async (req, res) => {
     try {
-        let name = req.query.name
-        let data = await Project.getProjects(name)
+        let queryObject = req.query
+        let data = await Project.getProjects(queryObject)
 
         res.status(200).send(data);
     } catch (err) {

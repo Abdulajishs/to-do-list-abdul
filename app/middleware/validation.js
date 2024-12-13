@@ -20,8 +20,8 @@ const projectValidationSchema = yup.object({
         .string()
         .required("Color is required"),
     is_favorite: yup
-        .boolean()
-        .default(false), // Optional; defaults to false
+        .boolean(),
+        // .default(false), // Optional; defaults to false
     user_id: yup
         .number()
         .required("User ID is required")

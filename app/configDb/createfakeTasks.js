@@ -1,4 +1,3 @@
-const sqlite3 = require('sqlite3').verbose();
 const faker = require('faker');
 
 let { db } = require('../utils/db-helper')
@@ -16,13 +15,22 @@ const generateTasks = async () => {
 
     const insertBatch = (batch) => {
       return new Promise((resolve, reject) => {
-        db.run(
-          `INSERT INTO tasks (content, description, due_date, is_completed, project_id) VALUES ${batch.join(",")}`,
-          (err) => {
-            if (err) reject(err);
-            else resolve();
-          }
-        );
+
+        const placeholders = batch.map(() => "(?, ?, ?, ?, ?)").join(",");    
+        const flatValues = batch.flat(); // Flatten the batch into a single array
+        const query = `INSERT INTO tasks (content, description, due_date, is_completed, project_id) VALUES ${placeholders}`;
+    
+        db.run(query, flatValues, (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+        // db.run(
+        //   `INSERT INTO tasks (content, description, due_date, is_completed, project_id) VALUES ${batch.join(",")}`,
+        //   (err) => {
+        //     if (err) reject(err);
+        //     else resolve();
+        //   }
+        // );
       });
     };
 
@@ -34,12 +42,12 @@ const generateTasks = async () => {
       for (let i = 1; i <= totalTasks; i++) {
         const content = faker.lorem.sentence().replace(/'/g, "''");
         const description = faker.lorem.paragraph().replace(/'/g, "''");
-        const due_date = faker.date.future();
+        const due_date = faker.date.future().toISOString().split('T')[0];
         const is_completed = faker.datatype.boolean();
         const project_id = faker.datatype.number({ min: 1, max: 1000000 }); // 1 million projects
 
         // Push a single row
-        batch.push(`('${content}', '${description}', '${due_date.toISOString()}', ${is_completed}, ${project_id})`);
+        batch.push(`('${content}', '${description}', '${due_date}', ${is_completed}, ${project_id})`);
 
         // Execute batch insert
         if (i % BATCH_SIZE === 0 || i === totalTasks) {

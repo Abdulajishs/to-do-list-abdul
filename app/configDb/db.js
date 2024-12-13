@@ -33,7 +33,7 @@ async function initializeDatabase() {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 content TEXT NOT NULL,
                 description TEXT NOT NULL,
-                due_date DATETIME NOT NULL,
+                due_date DATE NOT NULL,
                 is_completed BOOLEAN DEFAULT FALSE,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 project_id INTEGER NOT NULL,

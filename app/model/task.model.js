@@ -44,17 +44,33 @@ class Tasks {
 
 
             if (Object.keys(queryObject).length > 0) {
-                let key = Object.keys(queryObject);
-                let col = key[0];
-                let colData = queryObject[key[0]];
                 let allowedColumns = ['content', 'description', 'due_date', 'is_completed', 'created_at', 'project_id']
-
-                if (allowedColumns.includes(col)) {   //prevent sql injection
-                    query += ` WHERE ${col} LIKE ?`
-                    values.push(`%${colData}%`)
-                } else {
-                    throw new Error(`Invalid query parameter`)
+                let conditions = [];
+                
+                for(let [key,value] of Object.entries(queryObject)){
+                    if (allowedColumns.includes(key)) {
+                        conditions.push(`${key} LIKE ? `)
+                        values.push(value)
+                    }else {
+                        throw new Error(`Invalid query parameter ${key}`)
+                    }
                 }
+
+                if(conditions.length > 0){
+                    query += ` WHERE ` + conditions.join(` AND `)
+                }
+
+                // let key = Object.keys(queryObject);
+                // let col = key[0];
+                // let colData = queryObject[key[0]];
+                // let allowedColumns = ['content', 'description', 'due_date', 'is_completed', 'created_at', 'project_id']
+
+                // if (allowedColumns.includes(col)) {   //prevent sql injection
+                //     query += ` WHERE ${col} LIKE ?`
+                //     values.push(`%${colData}%`)
+                // } else {
+                //     throw new Error(`Invalid query parameter`)
+                // }
             }
 
             let rows = await getAllQuery(query, values);

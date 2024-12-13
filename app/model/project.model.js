@@ -14,7 +14,7 @@ class Project {
             let query = `
             INSERT INTO projects (name,color,is_favorite,user_id)
             VALUES (?,?,?,?)`
-            let values = [newProject.name, newProject.color, newProject.is_favorite,newProject.user_id];
+            let values = [newProject.name, newProject.color, newProject.is_favorite, newProject.user_id];
             let result = await runQuery(query, values)
 
             return { id: result.id, ...newProject }
@@ -39,15 +39,24 @@ class Project {
         }
     }
 
-    static async getProjects(name) {
+    static async getProjects(queryObject) {
         try {
             let query = `SELECT * FROM projects`
             let values = [];
-            if (name) {
-                query += ` WHERE name LIKE ?`
-                values.push(`%${name}%`)
-            }
 
+            if (Object.keys(queryObject).length > 0) {
+                let allowedColumns = ["name", "color", "is_favorite", "user_id"];
+                let conditions = [];
+                for (let [key, value] of Object.entries(queryObject)) {
+                    if (allowedColumns.includes(key)) {
+                        conditions.push(` ${key} LIKE ?`)
+                        values.push(value)
+                    }
+                }
+
+                query += ` WHERE ` + conditions.join(` AND `)
+            }
+            console.log(query, values)
             let rows = await getAllQuery(query, values);
             return rows
         } catch (error) {
