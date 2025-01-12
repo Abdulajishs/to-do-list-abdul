@@ -78,3 +78,5 @@ target/
 *.lock
 package-lock.json
 yarn.lock
+
+test.js

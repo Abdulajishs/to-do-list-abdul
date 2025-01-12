@@ -1,17 +1,18 @@
 const sqlite3 = require('sqlite3');
-let path = require('path');
+const path = require('path');
+const logger = require('./logger')
 
 const db = new sqlite3.Database(path.join(__dirname,"..","..","test.db"), (err) => {
     if (err) {
-        console.error(`Error connecting to the database : ${err.message}`)
+        logger.error(`Error connecting to the database: ${err.message}`);
     } else {
-        console.log('Successfully connected to sqlite3 database');
+        logger.info('Successfully connected to SQLite3 database');
     }
     db.run('PRAGMA foreign_keys = ON;', (err) => {
         if (err) {
-            console.error('Error enabling foreign keys:', err.message);
+            logger.error(`Error enabling foreign keys: ${err.message}`);
         } else {
-            console.log('Foreign keys enabled.');
+            logger.info('Foreign keys enabled.');
         }
     });
 })
@@ -20,6 +21,7 @@ function runQuery(query,values = []) {
     return new Promise((resolve, reject) => {
         db.run(query,values,function (err) {
             if (err) {
+                logger.error(`Error executing query: ${query}, values: ${values}, error: ${err.message}`);
                 reject(err)
             }else {
                 resolve({id:this.lastID, changes: this.changes})
@@ -32,6 +34,7 @@ function getAllQuery(query,values = []) {
     return new Promise((resolve, reject) => {
         db.all(query,values,function (err,rows) {
             if(err){
+                logger.error(`Error executing query: ${query}, values: ${values}, error: ${err.message}`);
                 reject(err)
             }else{
                 resolve(rows)
@@ -44,6 +47,7 @@ function getSingleQuery(query, values = []) {
     return new Promise((resolve, reject) => {
         db.get(query, values, function (err,row){
             if(err){
+                logger.error(`Error executing query: ${query}, values: ${values}, error: ${err.message}`);
                 reject(err)
             }else{
                 resolve(row)

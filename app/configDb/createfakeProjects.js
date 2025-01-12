@@ -24,13 +24,6 @@ const generateProjects = async () => {
           if (err) reject(err);
           else resolve();
         });
-        // db.run(
-        //   `INSERT INTO projects (name, color, is_favorite, user_id) VALUES ${batch.join(",")}`,
-        //   (err) => {
-        //     if (err) reject(err);
-        //     else resolve();
-        //   }
-        // );
       });
     };
 

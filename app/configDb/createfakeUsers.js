@@ -20,13 +20,6 @@ const generateUsers = async () => {
           if (err) reject(err);
           else resolve();
         });
-        // db.run(
-        //   `INSERT INTO users (name, email) VALUES ${batch.join(",")}`,
-        //   (err) => {
-        //     if (err) reject(err);
-        //     else resolve();
-        //   }
-        // );
       });
     };
 

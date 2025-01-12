@@ -24,13 +24,6 @@ const generateTasks = async () => {
           if (err) reject(err);
           else resolve();
         });
-        // db.run(
-        //   `INSERT INTO tasks (content, description, due_date, is_completed, project_id) VALUES ${batch.join(",")}`,
-        //   (err) => {
-        //     if (err) reject(err);
-        //     else resolve();
-        //   }
-        // );
       });
     };
 
