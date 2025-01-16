@@ -15,13 +15,15 @@ const userValidationSchema = yup.object({
 const projectValidationSchema = yup.object({
     name: yup
         .string()
-        .required("Project name is required"),
+    // .required("Project name is required")
+    ,
     color: yup
         .string()
-        .required("Color is required"),
+    // .required("Color is required")
+    ,
     is_favorite: yup
         .boolean(),
-        // .default(false), // Optional; defaults to false
+    // .default(false), // Optional; defaults to false
     user_id: yup
         .number()
         .required("User ID is required")

@@ -1,4 +1,4 @@
-let {db, runQuery } = require('../utils/db-helper')
+let { db, runQuery } = require('../utils/db-helper')
 
 
 
@@ -33,7 +33,7 @@ async function initializeDatabase() {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 content TEXT NOT NULL,
                 description TEXT NOT NULL,
-                due_date DATE NOT NULL,
+                due_date DATE NOT NULL, 
                 is_completed BOOLEAN DEFAULT FALSE,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 project_id INTEGER NOT NULL,
@@ -58,6 +58,13 @@ async function initializeDatabase() {
 
         await runQuery(commentsTableQuery);
         console.log("Comments table created successfully.");
+
+        await runQuery(`CREATE INDEX IF NOT EXISTS idx_projects_user_id ON projects (user_id)`)
+        await runQuery(`CREATE INDEX IF NOT EXISTS idx_tasks_project_id ON tasks (project_id)`)
+        await runQuery(`CREATE INDEX IF NOT EXISTS idx_comments_project_id ON comments (project_id)`)
+        await runQuery(`CREATE INDEX IF NOT EXISTS idx_comments_task_id ON comments (task_id)`)
+        console.log("Indexes created successfully.");
+
 
     } catch (error) {
         console.error("Error creating tables:", error.message);

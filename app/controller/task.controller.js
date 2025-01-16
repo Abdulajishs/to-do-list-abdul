@@ -1,4 +1,5 @@
 const Tasks = require('../model/task.model');
+const logger = require('../utils/logger');
 
 
 let createTask = async (req, res) => {
@@ -56,6 +57,26 @@ let getTaskById = async (req, res) => {
         logger.error(`Error fetching task with ID ${req.params.id}: ${err.message}`);
         res.status(500).send(
             { message: err.message }
+        )
+    }
+}
+
+let getTasksByProjectId = async (req, res) => {
+    try {
+        let projectId = parseInt(req.params.projectId);
+        console.log(typeof projectId)
+        if (isNaN(projectId)) {
+            logger.warn("Invalid project ID provided for fetching");
+            res.status(400).send({ message: "Invalid ID provided" });
+            return
+        }
+        logger.info(`Fetching tasks with project ID: ${projectId}`);
+        let data = await Tasks.getTasksByProject(projectId);
+        res.status(200).send(data)
+    } catch (error) {
+        logger.error(`Error fetching task with ID ${req.params.projectId}: ${error.message}`);
+        res.status(500).send(
+            { message: error.message }
         )
     }
 }
@@ -119,6 +140,7 @@ module.exports = {
     createTask,
     getALLTask,
     getTaskById,
+    getTasksByProjectId,
     updateTaskById,
     deleteTaskById,
     deleteAllTask

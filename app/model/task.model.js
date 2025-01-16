@@ -46,17 +46,17 @@ class Tasks {
             if (Object.keys(queryObject).length > 0) {
                 let allowedColumns = ['content', 'description', 'due_date', 'is_completed', 'created_at', 'project_id']
                 let conditions = [];
-                
-                for(let [key,value] of Object.entries(queryObject)){
+
+                for (let [key, value] of Object.entries(queryObject)) {
                     if (allowedColumns.includes(key)) {
                         conditions.push(`${key} LIKE ? `)
                         values.push(value)
-                    }else {
+                    } else {
                         throw new Error(`Invalid query parameter ${key}`)
                     }
                 }
 
-                if(conditions.length > 0){
+                if (conditions.length > 0) {
                     query += ` WHERE ` + conditions.join(` AND `)
                 }
 
@@ -97,6 +97,24 @@ class Tasks {
             return row
         } catch (error) {
             throw new Error(`Task with ID ${id} not found`);
+        }
+    }
+
+    static async getTasksByProject(projectId) {
+        try {
+            let query = ` SELECT * FROM tasks WHERE project_id = ? `
+            let values = [projectId]
+
+            let rows = await getAllQuery(query, values);
+
+            if (rows.length === 0) {
+                return []
+            }
+
+            return rows
+
+        } catch (error) {
+            throw new Error(`Project with ID ${projectId} not found`);
         }
     }
 

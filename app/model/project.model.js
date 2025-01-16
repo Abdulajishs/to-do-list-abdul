@@ -56,6 +56,7 @@ class Project {
 
                 query += ` WHERE ` + conditions.join(` AND `)
             }
+            query += ` LIMIT 10`
             console.log(query, values)
             let rows = await getAllQuery(query, values);
             return rows

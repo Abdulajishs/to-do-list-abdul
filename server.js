@@ -9,11 +9,11 @@ const errorHandler = require('./app/middleware/errorHandler');
 const app = express();
 
 const corsOption = {
-    origin : 'http://localhost:8081'
+    origin: ['http://localhost:3000', 'http://localhost:8081']
 }
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsOption));
 app.use(requestLogger)
 
@@ -32,29 +32,29 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 // import user router
-let userRouter = require(path.join(__dirname,'app','routes','user.routes.js'));
-app.use('/todolist/users',userRouter)
+let userRouter = require(path.join(__dirname, 'app', 'routes', 'user.routes.js'));
+app.use('/todolist/users', userRouter)
 
 // import project router
-let projectRouter = require(path.join(__dirname,'app','routes','project.routes.js'));
-app.use('/todolist/projects',projectRouter)
+let projectRouter = require(path.join(__dirname, 'app', 'routes', 'project.routes.js'));
+app.use('/todolist/projects', projectRouter)
 
 // import task router
-let taskRouter = require(path.join(__dirname,'app','routes','task.routes.js'))
-app.use('/todolist/tasks',taskRouter)
+let taskRouter = require(path.join(__dirname, 'app', 'routes', 'task.routes.js'))
+app.use('/todolist/tasks', taskRouter)
 
 // import comment router
-let commentRouter = require(path.join(__dirname,'app','routes','comment.routes.js'))
-app.use('/todolist/comments',commentRouter)
+let commentRouter = require(path.join(__dirname, 'app', 'routes', 'comment.routes.js'))
+app.use('/todolist/comments', commentRouter)
 
-app.get('/',(req,res)=>{
-    res.json({message: 'Welcome to todolist'})
+app.get('/', (req, res) => {
+    res.json({ message: 'Welcome to todolist' })
 })
 
 // Global error handling middleware  
 app.use(errorHandler)
 
-app.listen(port,()=>{
+app.listen(port, () => {
     logger.info(`server started on http://localhost:${port}`)
-    // console.log(`http://localhost:${port}`)
+    console.log(`http://localhost:${port}`)
 })

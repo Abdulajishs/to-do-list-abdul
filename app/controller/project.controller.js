@@ -1,4 +1,5 @@
 const Project = require('../model/project.model');
+const logger = require('../utils/logger');
 
 let createProject = async (req, res) => {
     try {
@@ -32,6 +33,7 @@ let getProjectById = async (req, res) => {
         let id = parseInt(req.params.id)
         // console.log(id)
         if (isNaN(id)) {
+            logger.warn(`Invalid projectId: ${projectId}`);
             return res.status(400).send({ message: "Invalid project ID." });
         }
 
